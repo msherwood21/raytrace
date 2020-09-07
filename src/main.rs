@@ -7,10 +7,13 @@ fn main() {
 
     //- Render
     //-   Header
-    println!("P3\n{} {}\n255\n", image_width, image_height);
+    println!("P3\n{} {}\n255", image_width, image_height);
 
     //-   Body
     for j in (0..image_height).rev() {
+        //- Progress bar
+        eprint!("\rScanlines remaining: {}", j);
+
         for i in 0..image_width {
             let r = f64::from(i) / f64::from(image_width - 1);
             let g = f64::from(j) / f64::from(image_height - 1);
@@ -23,4 +26,6 @@ fn main() {
             println!("{} {} {}", ir, ig, ib);
         }
     }
+
+    eprintln!("\nDone.");
 }

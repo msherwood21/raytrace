@@ -1,0 +1,4 @@
+Section 2.3
+-----------
+- println! goes to stdio (duh). eprintln! goes to stderr.
+- There is an [e]print! macro that is [e]println! without the newline at the end
