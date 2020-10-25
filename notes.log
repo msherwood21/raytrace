@@ -2,3 +2,34 @@ Section 2.3
 -----------
 - println! goes to stdio (duh). eprintln! goes to stderr.
 - There is an [e]print! macro that is [e]println! without the newline at the end
+
+Section 3.1, 3.2, 3.3
+---------------------
+- How do we include files? Reading chapter 7 of the rust book to understand...
+  - I think I need to define a small module structure to know what I can call
+    - Quick detour to read chapter 17 and 17.1. Objects look different here!
+    - Make sure everything is `pub` if you want to call it
+  - Ok, so at the top of a file put `mod <name of module>`. Rust will look in
+    `<name of module>/mod.rs`. I know there's more, but that'll get us to our
+    goal today.
+- Type aliases are the exact same syntax as C++. `pub` up front to be consumed
+  elsewhere; `type` instead of `alias`.
+- `structs` can be value initialized just like C++. Attributes must be `pub` in
+  order to do that though.
+- Creating structs or calling functions from other modules is just like using
+  something from a different namespace in C++. Rust style is shortened snake
+  case for everything except types I think.
+- Use `&` before <type> or `mut <type>` to signify a reference to a type. Seems
+  straightforward, but I don't know if it's overloaded to also mean the address
+  of a pointer like in C++. Important as Rust's borrow checker won't take
+  ownership from the original caller.
+- Use `impl` blocks to define methods for structs (and potentially other
+  types?). Must use `&self` as first argument to methods or else they're
+  static. All calls to struct methods and variables must use `self.method()` or
+  `self.var`.
+- Traits are like interfaces. Not sure of the nuanced differences for now. Rust
+  wants you to put `dyn` before trait parameters to functions.
+- Rust warns if a call returns a Result and you don't handle it. If you have no
+  intention of handling the Result, but also don't expect the call to fail you
+  can use `expect()` to panic and crash the program with some sort of error
+  message.
