@@ -33,3 +33,58 @@ Section 3.1, 3.2, 3.3
   intention of handling the Result, but also don't expect the call to fail you
   can use `expect()` to panic and crash the program with some sort of error
   message.
+
+Section 4.1, 4.2
+----------------
+- Ok, so we might want to look at how to include files in a different manner now.
+  I know System76 has some Rust repos on Github that are GPL3 (should work with
+  my license) so let's just go look at some examples (and consult StackOverflow!).
+  - For files not named main, just place them alongside main without the `mod`
+    wrapping. In main (or, I guess, other files as well) put `mod <file_name>`.
+  - Yeah...that didn't work. To the docs!
+    - A crate is a binary or library.
+    - A package is 1+ crates. Restricted to only one library per package.
+    - `src/main.rs` or `src/lib.rs` means a binary or library crate with the same
+      name as the package. Rust files in `src/bin` will create as many binary
+      crates with as many names as the files.
+    - Modules are "silos", scopes or namespaces within a crate. Everything is
+      private by default. Children can see their parent context; not the other
+      way around. Put `pub` before `mod` and `fn` to be seen outside module.
+    - `use` is like creating a symbolic link. Somewhat like #include in C++. There
+      are relative and absolute module paths. To use an absolute module path start
+      the import with `crate::`.
+- Now that I'm looking at this old code I can see I didn't actually use an array
+  for Vec3. Fixed that.
+- Also, the utility functions for vec3 are marked inline. Rust inlines through
+  attributes. Will probably dig into them more for tests / docs.
+- `const` functions in Rust are different from C++ const member functions. Actually
+  like `constexpr`.
+- Switched to a different PC to do work. Locking the toolchain to a specific version
+  was a little frustrating, but the rust-toolchain file is set (for now).
+- So to do "operator overloading" I basically need to implement traits for a struct.
+  Doesn't seem too crazy.
+- Ampersands signify references to types like C++. Really important as the borrow
+  checker "unbinds" or moves ownership into functions if not passed by ref.
+  - Speaking of the borrow checker...I got my first error related to "borrow of a
+    moved value" in the unit_vector function. Guess it's time to learn.
+    - Book presents ownership, borrowing and lifetimes as three parts of the
+      ownership system (borrow checker?). Ownership is move by default; implement
+      Copy trait if you want that. Unlike C++, after a move you cannot reference
+      the variable again.
+    - Borrowing is...just passing by reference? Use the ampersand at both the call
+      site and the function declaration. Like variables in function, const unless
+      `mut` is used. If so, you put `*` before variable name when modifying. Can
+      only have one mutating reference at a time.
+    - Lifetime just refers to how long data lives. It's mainly within scopes. Be
+      careful with your references.
+      - `'a` introduced here as "the lifetime a". "We need to ensure any reference
+        to" a type "cannot outlive the reference to" a type "it contains." AKA you
+        probably need this if you have a struct with a reference and you return that
+        reference through a getter. This ensures whatever variable is bound to the
+        reference goes out of scope before the original reference.
+      - `'static` is a special lifetime that means it's valid for the entire life of
+        the program.
+- `as` signifies a cast. Coercions are harmless (as the docs put it) casts. Casts can
+  be dangerous, so they use a keyword for a sign post.
+- The vec3 class in C++ does no delete the copy constructor so we're going to implement
+  the Copy trait.

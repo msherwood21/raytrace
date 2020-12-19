@@ -12,3 +12,7 @@ Check the [License](License.md) file for usage details
 
 ## Can I Add To It?
 Just fork it and go on your merry way. Once I'm done learning I will not be touching the repository again.
+
+## Versions
+- Rust toolchain: 1.45.1
+- Ray Tracing In One Weekend: v3.2.0
