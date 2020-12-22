@@ -21,8 +21,7 @@ impl Ray {
         self.dir
     }
 
-    //- NOTE: Uncomment when the code is used in future commits.
-    // pub fn at(&self, t: f64) -> vec3::Point3 {
-    //     self.orig + (t * self.dir)
-    // }
+    pub fn at(&self, t: f64) -> vec3::Point3 {
+        self.orig + (t * self.dir)
+    }
 }

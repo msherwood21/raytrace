@@ -1,31 +1,47 @@
 mod color;
+mod hittable;
 mod ray;
+mod sphere;
 mod vec3;
 use std::io;
 
-fn hit_sphere(center: &vec3::Point3, radius: f64, r: &ray::Ray) -> bool {
+fn hit_sphere(center: &vec3::Point3, radius: f64, r: &ray::Ray) -> f64 {
     let oc: vec3::Vec3 = r.origin() - *center;
-    let a = vec3::dot(&r.direction(), &r.direction());
-    let b = 2.0 * vec3::dot(&oc, &r.direction());
-    let c = vec3::dot(&oc, &oc) - (radius * radius);
-    let discriminant = (b * b) - (4.0 * a * c);
+    let a = r.direction().length_squared();
+    let half_b = vec3::dot(&oc, &r.direction());
+    let c = oc.length_squared() - (radius * radius);
+    let discriminant = (half_b * half_b) - (a * c);
 
-    discriminant > 0.0
+    if discriminant < 0.0 {
+        return -1.0;
+    } else {
+        return (-half_b - discriminant.sqrt()) / a;
+    }
 }
 
 fn ray_color(r: &ray::Ray) -> vec3::Color {
-    if hit_sphere(
+    let mut t = hit_sphere(
         &vec3::Point3 {
             e: [0.0, 0.0, -1.0],
         },
         0.5,
         &r,
-    ) {
-        return vec3::Color { e: [1.0, 0.0, 0.0] };
+    );
+    if t > 0.0 {
+        let n: vec3::Vec3 = vec3::unit_vector(
+            r.at(t)
+                - vec3::Vec3 {
+                    e: [0.0, 0.0, -1.0],
+                },
+        );
+        return 0.5
+            * vec3::Color {
+                e: [n.x() + 1.0, n.y() + 1.0, n.z() + 1.0],
+            };
     }
 
     let unit_direction = vec3::unit_vector(r.direction());
-    let t = 0.5 * (unit_direction.y() + 1.0);
+    t = 0.5 * (unit_direction.y() + 1.0);
 
     (1.0 - t) * vec3::Color { e: [1.0, 1.0, 1.0] } + t * vec3::Color { e: [0.5, 0.7, 1.0] }
 }

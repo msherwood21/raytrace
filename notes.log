@@ -95,3 +95,11 @@ Section 5.1, 5.2
 - First time hitting an `if` block. Apparently you don't use parentheses for them.
 - Somehow in the switching of environments (and maybe my brain getting a bit tired) I
   committed a few bugs. Rectified.
+
+Section 6.1, 6.2, 6.3
+---------------------
+- sqrt is a function on the f64 type.
+- Ok, hitting runtime polymorphism code (encountered a little bit before). Can use `dyn`
+  with function arguments or use generics for static polymorphism (aka C++ templates).
+  - `pub` before function declarations in traits is an error. Apparently either the
+    whole trait is public or the whole trait is private.
