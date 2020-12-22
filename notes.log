@@ -103,3 +103,12 @@ Section 6.1, 6.2, 6.3
   with function arguments or use generics for static polymorphism (aka C++ templates).
   - `pub` before function declarations in traits is an error. Apparently either the
     whole trait is public or the whole trait is private.
+
+A Brief Aside Regarding Tooling
+-------------------------------
+- The `rustup-toolchain` file was thrown into the repo when I switched to a Windows
+  machine. Coming back to Linux that file did not work (beyond removing the obvious
+  Windows platform only line). At this point I have read the rustup book and did not
+  find any obvious problems. In fact, the problem appeared to be related to not having
+  updated the rustup tool on Linux since summer. I imagine the tool did not know about
+  the revision I pinned. Always keep your tools up to date!
