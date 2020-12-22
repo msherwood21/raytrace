@@ -88,3 +88,10 @@ Section 4.1, 4.2
   be dangerous, so they use a keyword for a sign post.
 - The vec3 class in C++ does no delete the copy constructor so we're going to implement
   the Copy trait.
+
+Section 5.1, 5.2
+----------------
+- Unlike C++ you have to dereference references (with *)
+- First time hitting an `if` block. Apparently you don't use parentheses for them.
+- Somehow in the switching of environments (and maybe my brain getting a bit tired) I
+  committed a few bugs. Rectified.

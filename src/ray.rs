@@ -13,10 +13,9 @@ impl Ray {
     //  ray(const point3& origin, const vec3& direction)
     //      : orig(origin), dir(direction)
 
-    //- NOTE: Uncomment when the code is used in future commits.
-    // pub fn origin(&self) -> vec3::Point3 {
-    //     self.orig
-    // }
+    pub fn origin(&self) -> vec3::Point3 {
+        self.orig
+    }
 
     pub fn direction(&self) -> vec3::Vec3 {
         self.dir
