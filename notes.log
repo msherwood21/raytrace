@@ -112,3 +112,25 @@ A Brief Aside Regarding Tooling
   find any obvious problems. In fact, the problem appeared to be related to not having
   updated the rustup tool on Linux since summer. I imagine the tool did not know about
   the revision I pinned. Always keep your tools up to date!
+
+Section 6.4, 6.5, 6.6, 6.7
+--------------------------
+- `if` `else` blocks return the last expression just like functions. I don't know why,
+  but this is blowing my mind. Much nicer than ternary operators in my opinion.
+- Finally hit a file name that's "two" words. Found the following link:
+  https://rust-lang.github.io/api-guidelines/naming.html. Modules are snake case so
+  that's what I'm going with.
+- Oh man, `shared_ptr`. I really only have experience with `unique_ptr` so let's dive
+  into this and see if there's a Rust equivalent.
+  - We're single-threaded at the moment so let's go with `std::rc::Rc`.
+- Iterating over a container in a for loop actually copies the individual objects
+  unless you use a slice. That's definitely something that will trip me up in the
+  future. At least the compiler warns you (but only if you don't implement the Copy
+  trait?).
+- Ok, up to this point I've somewhat avoided default constructors (partially out of
+  ignorance). Naming and initializing all the fields of a type at instantiation is
+  the only way to create an object in Rust. Source:
+  https://doc.rust-lang.org/nightly/nomicon/constructors.html. "Default" constructors
+  are static `new` functions for the type. Adding for types that had a default
+  constructor in C++.
+- No overloaded functions in Rust so no overloaded constructors.
