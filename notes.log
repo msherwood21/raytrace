@@ -134,3 +134,11 @@ Section 6.4, 6.5, 6.6, 6.7
   are static `new` functions for the type. Adding for types that had a default
   constructor in C++.
 - No overloaded functions in Rust so no overloaded constructors.
+
+Section 7.1, 7.2
+----------------
+- We've hit our first absolute need for crates in `rand`. Fortunately this crate is
+  used in the early parts of the Rust book so it should be easy to add. This interface is
+  a little different than the C version so we'll try to adapt correctly.
+- Apparently if you want to not use variables you prefix them with an underscore. At
+  least, that's what the compiler is telling me to do.

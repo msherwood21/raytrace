@@ -30,7 +30,6 @@ impl Vec3 {
     //- double operator[](int i) const { return e[i]; }
     //- double& operator[](int i) { return e[i]; }
 
-    //- vec3& operator+=(const vec3 &v);
     //- vec3& operator*=(const double t);
     //- vec3& operator/=(const double t);
 
@@ -66,6 +65,15 @@ impl ops::Neg for Vec3 {
         Vec3 {
             e: [-self.e[0], -self.e[1], -self.e[2]],
         }
+    }
+}
+
+//- vec3& operator+=(const vec3 &v);
+impl ops::AddAssign<Vec3> for Vec3 {
+    fn add_assign(&mut self, rhs: Vec3) {
+        self.e[0] += rhs.e[0];
+        self.e[1] += rhs.e[1];
+        self.e[2] += rhs.e[2];
     }
 }
 

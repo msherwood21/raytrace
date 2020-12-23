@@ -1,3 +1,4 @@
+mod camera;
 mod color;
 mod hittable;
 mod hittable_list;
@@ -24,6 +25,7 @@ fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_width: i32 = 400;
     let image_height: i32 = (f64::from(image_width) / aspect_ratio) as i32;
+    let samples_per_pixel = 100;
 
     //- World
     let mut world = hittable_list::HittableList::new();
@@ -41,23 +43,7 @@ fn main() {
     }));
 
     //- Camera
-    let viewport_height = 2.0;
-    let viewport_width = aspect_ratio * viewport_height;
-    let focal_length = 1.0;
-
-    let origin = vec3::Point3 { e: [0.0, 0.0, 0.0] };
-    let horizontal = vec3::Vec3 {
-        e: [viewport_width, 0.0, 0.0],
-    };
-    let vertical = vec3::Vec3 {
-        e: [0.0, viewport_height, 0.0],
-    };
-    let lower_left_corner = origin
-        - horizontal / 2.0
-        - vertical / 2.0
-        - vec3::Vec3 {
-            e: [0.0, 0.0, focal_length],
-        };
+    let cam = camera::Camera::new();
 
     //- Render
     //    Header
@@ -69,14 +55,14 @@ fn main() {
         eprint!("\rScanlines remaining: {}", j);
 
         for i in 0..image_width {
-            let u = f64::from(i) / f64::from(image_width - 1);
-            let v = f64::from(j) / f64::from(image_height - 1);
-            let r = ray::Ray {
-                orig: origin,
-                dir: lower_left_corner + u * horizontal + v * vertical - origin,
-            };
-            let pixel_color = ray_color(&r, &world);
-            color::write_color(&mut io::stdout(), pixel_color);
+            let mut pixel_color = vec3::Color{ e: [0.0, 0.0, 0.0] };
+            for _s in 0..samples_per_pixel {
+                let u = (f64::from(i) + rtweekend::random_double()) / f64::from(image_width - 1);
+                let v = (f64::from(j) + rtweekend::random_double()) / f64::from(image_height - 1);
+                let r = cam.get_ray(u, v);
+                pixel_color += ray_color(&r, &world);
+            }
+            color::write_color(&mut io::stdout(), pixel_color, samples_per_pixel);
         }
     }
 
