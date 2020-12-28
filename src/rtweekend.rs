@@ -5,9 +5,9 @@ use rand::Rng;
 //- std::numeric_limits<double>::infinity();
 pub const INFINITY: f64 = f64::INFINITY;
 //- const double pi = 3.1415926535897932385;
-// pub const PI: f64 = 3.1415926535897932385;
+pub const PI: f64 = 3.1415926535897932385;
 
-//- inline double degrees_to_radians(double degrees) 
+//- inline double degrees_to_radians(double degrees)
 // #[inline]
 // pub fn degrees_to_radians(degrees: f64) -> f64 {
 //     degrees * PI / 180.0
@@ -28,8 +28,12 @@ pub fn random_double_in_range(min: f64, max: f64) -> f64 {
 //- inline double clamp(double x, double min, double max)
 #[inline]
 pub fn clamp(x: f64, min: f64, max: f64) -> f64 {
-    if x < min { return min; }
-    if x > max { return max; }
+    if x < min {
+        return min;
+    }
+    if x > max {
+        return max;
+    }
     return x;
 }
 

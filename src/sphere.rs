@@ -1,10 +1,13 @@
 use crate::hittable;
+use crate::material;
 use crate::ray;
 use crate::vec3;
+use std::rc;
 
 pub struct Sphere {
     pub center: vec3::Point3,
     pub radius: f64,
+    pub mat_ptr: rc::Rc<dyn material::Material>,
 }
 
 impl Sphere {
@@ -16,8 +19,9 @@ impl Sphere {
     //     }
     // }
 
-    //- sphere(point3 cen, double r) : center(cen), radius(r) {}
-    //  Implemented through positional arguments
+    //- Implemented through positional arguments
+    //- sphere(point3 cen, double r, shared_ptr<material> m)
+    //      : center(cen), radius(r), mat_ptr(m) {};
 }
 
 impl hittable::Hittable for Sphere {
@@ -37,6 +41,7 @@ impl hittable::Hittable for Sphere {
                 rec.p = r.at(rec.t);
                 let outward_normal = (rec.p - self.center) / self.radius;
                 rec.set_face_normal(r, &outward_normal);
+                rec.mat_ptr = Some(rc::Rc::clone(&self.mat_ptr));
                 return true;
             }
 
@@ -46,6 +51,7 @@ impl hittable::Hittable for Sphere {
                 rec.p = r.at(rec.t);
                 let outward_normal = (rec.p - self.center) / self.radius;
                 rec.set_face_normal(r, &outward_normal);
+                rec.mat_ptr = Some(rc::Rc::clone(&self.mat_ptr));
                 return true;
             }
         }

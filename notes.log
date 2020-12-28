@@ -164,3 +164,14 @@ A Brief Aside For Resolutions
 Section 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
 ------------------------------------
 - `loop` denotes an infinite loop (replacement for `while true`). Seems simple enough.
+
+Section 9.1, 9.2, 9.3, 9.4, 9.5
+-------------------------------
+- In Section 9.2 the `hit_record` (`HitRecord` for us) struct is updated with a shared_ptr.
+  This does not affect structs and classes in C++ because a shared_ptr has a default
+  constructor that will initialize its internal pointer to null. Thus, it works for free
+  (with this program implementation) in C++. We can't do that in Rust with `Rc` because the
+  `Default` trait can't implement a dynamic trait (`Material`) and `Rc` has to be
+  initialized with something.
+  - Solved the problem by wrapping the `Rc` with an `Option` and using pattern matching in
+    `main::ray_color`. I'm almost certain there's a better way to do this, but I'm learning!

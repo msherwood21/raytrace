@@ -13,6 +13,13 @@ impl Ray {
     //  ray(const point3& origin, const vec3& direction)
     //      : orig(origin), dir(direction)
 
+    pub fn new() -> Ray {
+        Ray {
+            orig: vec3::Vec3::new(),
+            dir: vec3::Vec3::new(),
+        }
+    }
+
     pub fn origin(&self) -> vec3::Point3 {
         self.orig
     }

@@ -2,6 +2,7 @@ mod camera;
 mod color;
 mod hittable;
 mod hittable_list;
+mod material;
 mod ray;
 mod rtweekend;
 mod sphere;
@@ -13,11 +14,24 @@ use std::rc;
 fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: i32) -> vec3::Color {
     let mut rec = hittable::HitRecord::new();
 
-    if depth <= 0 { return vec3::Color{ e: [0.0, 0.0, 0.0] } }
+    if depth <= 0 {
+        return vec3::Color { e: [0.0, 0.0, 0.0] };
+    }
 
     if world.hit(r, 0.001, rtweekend::INFINITY, &mut rec) {
-        let target = rec.p + vec3::random_in_hemisphere(&rec.normal);
-        return 0.5 * ray_color(&ray::Ray{ orig: rec.p, dir: target - rec.p }, world, depth - 1);
+        let mut scattered = ray::Ray::new();
+        let mut attenuation = vec3::Color::new();
+
+        match &rec.mat_ptr {
+            Some(val) => {
+                if val.scatter(r, &rec, &mut attenuation, &mut scattered) {
+                    return attenuation * ray_color(&scattered, world, depth - 1);
+                }
+            },
+            None => return vec3::Color::new(),
+        }
+
+        return vec3::Color::new();
     }
 
     let unit_direction = vec3::unit_vector(r.direction());
@@ -55,17 +69,47 @@ fn main() {
 
     //- World
     let mut world = hittable_list::HittableList::new();
-    world.add(rc::Rc::new(sphere::Sphere {
-        center: vec3::Point3 {
-            e: [0.0, 0.0, -1.0],
-        },
-        radius: 0.5,
-    }));
+
+    let material_ground =
+        rc::Rc::<material::Lambertian>::new(material::Lambertian::new(&vec3::Color {
+            e: [0.8, 0.8, 0.0],
+        }));
+    let material_center =
+        rc::Rc::<material::Lambertian>::new(material::Lambertian::new(&vec3::Color {
+            e: [0.7, 0.3, 0.3],
+        }));
+    let material_left =
+        rc::Rc::<material::Metal>::new(material::Metal::new(&vec3::Color { e: [0.8, 0.8, 0.8] }, 0.3));
+    let material_right =
+        rc::Rc::<material::Metal>::new(material::Metal::new(&vec3::Color { e: [0.8, 0.6, 0.2] }, 1.0));
+
     world.add(rc::Rc::new(sphere::Sphere {
         center: vec3::Point3 {
             e: [0.0, -100.5, -1.0],
         },
         radius: 100.0,
+        mat_ptr: material_ground,
+    }));
+    world.add(rc::Rc::new(sphere::Sphere {
+        center: vec3::Point3 {
+            e: [0.0, 0.0, -1.0],
+        },
+        radius: 0.5,
+        mat_ptr: material_center,
+    }));
+    world.add(rc::Rc::new(sphere::Sphere {
+        center: vec3::Point3 {
+            e: [-1.0, 0.0, -1.0],
+        },
+        radius: 0.5,
+        mat_ptr: material_left,
+    }));
+    world.add(rc::Rc::new(sphere::Sphere {
+        center: vec3::Point3 {
+            e: [1.0, 0.0, -1.0],
+        },
+        radius: 0.5,
+        mat_ptr: material_right,
     }));
 
     //- Camera
@@ -78,7 +122,7 @@ fn main() {
     //    Body
     for j in (0..image_height).rev() {
         //- Progress bar
-        eprint!("\rScanlines remaining: {}", j);
+        eprint!("\rScanlines remaining: {:#04}", j);
 
         for i in 0..image_width {
             let mut pixel_color = vec3::Color { e: [0.0, 0.0, 0.0] };

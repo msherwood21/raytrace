@@ -1,11 +1,12 @@
+use crate::material;
 use crate::ray;
 use crate::vec3;
-use std::clone;
-use std::marker;
+use std::rc;
 
 pub struct HitRecord {
     pub p: vec3::Point3,
     pub normal: vec3::Vec3,
+    pub mat_ptr: Option<rc::Rc<dyn material::Material>>,
     pub t: f64,
     pub front_face: bool,
 }
@@ -19,6 +20,7 @@ impl HitRecord {
         HitRecord {
             p: vec3::Point3::new(),
             normal: vec3::Vec3::new(),
+            mat_ptr: None,
             t: 0.0,
             front_face: false,
         }
@@ -32,15 +34,5 @@ impl HitRecord {
         } else {
             -*outward_normal
         };
-    }
-}
-
-//- Implementing the Copy trait for code differing from the C++ implementation. See
-//  the trait implementation in hittable_list.rs.
-impl marker::Copy for HitRecord {}
-
-impl clone::Clone for HitRecord {
-    fn clone(&self) -> HitRecord {
-        *self
     }
 }

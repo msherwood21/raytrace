@@ -207,24 +207,27 @@ pub fn random_in_unit_sphere() -> Vec3 {
     }
 }
 
-//- NOTE: The following function was commented out because it was replaced by
-//      random_in_hemisphere() and we want to avoid compiler warnings.
 //- vec3 random_unit_vector()
-// pub fn random_unit_vector() -> Vec3 {
-//     let a = rtweekend::random_double_in_range(0.0, 2.0 * rtweekend::PI);
-//     let z = rtweekend::random_double_in_range(-1.0, 1.0);
-//     let r = (1.0 - z * z).sqrt();
-//     Vec3 {
-//         e: [r * a.cos(), r * a.sin(), z],
+pub fn random_unit_vector() -> Vec3 {
+    let a = rtweekend::random_double_in_range(0.0, 2.0 * rtweekend::PI);
+    let z = rtweekend::random_double_in_range(-1.0, 1.0);
+    let r = (1.0 - z * z).sqrt();
+    Vec3 {
+        e: [r * a.cos(), r * a.sin(), z],
+    }
+}
+
+//- vec3 random_in_hemisphere(const vec3& normal)
+// pub fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
+//     let in_unit_sphere = random_in_unit_sphere();
+//     if dot(&in_unit_sphere, normal) > 0.0 {
+//         return in_unit_sphere;
+//     } else {
+//         return -in_unit_sphere;
 //     }
 // }
 
-//- vec3 random_in_hemisphere(const vec3& normal)
-pub fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
-    let in_unit_sphere = random_in_unit_sphere();
-    if dot(&in_unit_sphere, normal) > 0.0 {
-        return in_unit_sphere;
-    } else {
-        return -in_unit_sphere;
-    }
+//- vec3 reflect(const vec3& v, const vec3& n)
+pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
+    *v - 2.0 * dot(v, n) * *n
 }
