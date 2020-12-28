@@ -6,6 +6,7 @@ mod ray;
 mod rtweekend;
 mod sphere;
 mod vec3;
+use std::env;
 use std::io;
 use std::rc;
 
@@ -22,10 +23,30 @@ fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable) -> vec3::Color {
 
 fn main() {
     //- Image
+    let mut image_width: u32 = 400;
+    let mut arg_iter = env::args().peekable();
+    while arg_iter.peek() != None {
+        let opt = arg_iter
+            .next()
+            .expect("Invalid iterator value after initial peek");
+
+        if opt == "--width" || opt == "-w" {
+            image_width = arg_iter
+                .next()
+                .expect("You must pass an argument to the width argument")
+                .parse::<u32>()
+                .expect("Invalid value with width option. Use --width <u32>.");
+        }
+    }
+
     let aspect_ratio = 16.0 / 9.0;
-    let image_width: i32 = 400;
     let image_height: i32 = (f64::from(image_width) / aspect_ratio) as i32;
     let samples_per_pixel = 100;
+
+    eprintln!(
+        "Creating image with a resolution of {}x{}",
+        image_width, image_height
+    );
 
     //- World
     let mut world = hittable_list::HittableList::new();
@@ -55,7 +76,7 @@ fn main() {
         eprint!("\rScanlines remaining: {}", j);
 
         for i in 0..image_width {
-            let mut pixel_color = vec3::Color{ e: [0.0, 0.0, 0.0] };
+            let mut pixel_color = vec3::Color { e: [0.0, 0.0, 0.0] };
             for _s in 0..samples_per_pixel {
                 let u = (f64::from(i) + rtweekend::random_double()) / f64::from(image_width - 1);
                 let v = (f64::from(j) + rtweekend::random_double()) / f64::from(image_height - 1);

@@ -142,3 +142,21 @@ Section 7.1, 7.2
   a little different than the C version so we'll try to adapt correctly.
 - Apparently if you want to not use variables you prefix them with an underscore. At
   least, that's what the compiler is telling me to do.
+
+A Brief Aside For Resolutions
+-----------------------------
+- The raytracer is starting to take some time, but it's also getting tougher to appreciate
+  the output at the lower resolution. I'm adding a switch to create a larger image.
+- Two "new" Rust concepts: while loops and iterators
+  - We're going to use peekable iterators. This lets us use a while loop to check for our
+    end condition in the initial state as well as all following states. As we evaluate
+    iterator arguments we'll peek at the next one to make sure it's a valid input before
+    doing work.
+    - Iterators return the Option type. I've briefly seen this pattern so it's not
+      surprising, but I do need to readjust my thinking for it.
+    - Also, the Result type is used as part of the parse call. This uses the Rust enum
+      type which I know is different and probably usable. Also, according to the docs I
+      read Result is for areas where there are expected errors.
+    - As a design decision we'll change `image_width` to `u32` so the user can't enter a
+      negative resolution. This shouldn't impact the code we've written so far in any
+      meaningful way.
