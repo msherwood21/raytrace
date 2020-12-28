@@ -6,11 +6,11 @@ pub fn write_color(out: &mut dyn std::io::Write, pixel_color: vec3::Color, sampl
     let mut g = pixel_color.y();
     let mut b = pixel_color.z();
 
-    // Divide the color by the number of samples.
+    // Divide the color by the number of samples and gamma-correct for gamma=2.0.
     let scale = 1.0 / f64::from(samples_per_pixel);
-    r *= scale;
-    g *= scale;
-    b *= scale;
+    r = (scale * r).sqrt();
+    g = (scale * g).sqrt();
+    b = (scale * b).sqrt();
 
     // Write the translated [0,255] value of each color component.
     write!(

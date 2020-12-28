@@ -160,3 +160,7 @@ A Brief Aside For Resolutions
     - As a design decision we'll change `image_width` to `u32` so the user can't enter a
       negative resolution. This shouldn't impact the code we've written so far in any
       meaningful way.
+
+Section 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
+------------------------------------
+- `loop` denotes an infinite loop (replacement for `while true`). Seems simple enough.

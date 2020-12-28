@@ -20,10 +20,10 @@ pub fn random_double() -> f64 {
 }
 
 //- inline double random_double(double min, double max)
-// #[inline]
-// pub fn random_double_in_range(min: f64, max: f64) -> f64 {
-//     min + (max - min) * random_double()
-// }
+#[inline]
+pub fn random_double_in_range(min: f64, max: f64) -> f64 {
+    min + (max - min) * random_double()
+}
 
 //- inline double clamp(double x, double min, double max)
 #[inline]

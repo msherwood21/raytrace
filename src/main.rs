@@ -10,14 +10,18 @@ use std::env;
 use std::io;
 use std::rc;
 
-fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable) -> vec3::Color {
+fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: i32) -> vec3::Color {
     let mut rec = hittable::HitRecord::new();
-    if world.hit(r, 0.0, rtweekend::INFINITY, &mut rec) {
-        return 0.5 * (rec.normal + vec3::Color { e: [1.0, 1.0, 1.0] });
+
+    if depth <= 0 { return vec3::Color{ e: [0.0, 0.0, 0.0] } }
+
+    if world.hit(r, 0.001, rtweekend::INFINITY, &mut rec) {
+        let target = rec.p + vec3::random_in_hemisphere(&rec.normal);
+        return 0.5 * ray_color(&ray::Ray{ orig: rec.p, dir: target - rec.p }, world, depth - 1);
     }
+
     let unit_direction = vec3::unit_vector(r.direction());
     let t = 0.5 * (unit_direction.y() + 1.0);
-
     (1.0 - t) * vec3::Color { e: [1.0, 1.0, 1.0] } + t * vec3::Color { e: [0.5, 0.7, 1.0] }
 }
 
@@ -42,6 +46,7 @@ fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_height: i32 = (f64::from(image_width) / aspect_ratio) as i32;
     let samples_per_pixel = 100;
+    let max_depth = 50;
 
     eprintln!(
         "Creating image with a resolution of {}x{}",
@@ -81,7 +86,7 @@ fn main() {
                 let u = (f64::from(i) + rtweekend::random_double()) / f64::from(image_width - 1);
                 let v = (f64::from(j) + rtweekend::random_double()) / f64::from(image_height - 1);
                 let r = cam.get_ray(u, v);
-                pixel_color += ray_color(&r, &world);
+                pixel_color += ray_color(&r, &world, max_depth);
             }
             color::write_color(&mut io::stdout(), pixel_color, samples_per_pixel);
         }

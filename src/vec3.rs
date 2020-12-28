@@ -1,3 +1,4 @@
+use crate::rtweekend;
 use std::clone;
 use std::marker;
 use std::ops;
@@ -41,6 +42,30 @@ impl Vec3 {
     //- double length_squared() const
     pub fn length_squared(&self) -> f64 {
         (self.e[0] * self.e[0]) + (self.e[1] * self.e[1]) + (self.e[2] * self.e[2])
+    }
+
+    //- inline static vec3 random()
+    #[inline]
+    pub fn random() -> Vec3 {
+        Vec3 {
+            e: [
+                rtweekend::random_double(),
+                rtweekend::random_double(),
+                rtweekend::random_double(),
+            ],
+        }
+    }
+
+    //- inline static vec3 random(double min, double max)
+    #[inline]
+    pub fn random_range(min: f64, max: f64) -> Vec3 {
+        Vec3 {
+            e: [
+                rtweekend::random_double_in_range(min, max),
+                rtweekend::random_double_in_range(min, max),
+                rtweekend::random_double_in_range(min, max),
+            ],
+        }
     }
 }
 
@@ -169,4 +194,37 @@ pub fn dot(u: &Vec3, v: &Vec3) -> f64 {
 #[inline]
 pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.length()
+}
+
+//- vec3 random_in_unit_sphere()
+pub fn random_in_unit_sphere() -> Vec3 {
+    loop {
+        let p = Vec3::random_range(-1.0, 1.0);
+        if p.length_squared() >= 1.0 {
+            continue;
+        }
+        return p;
+    }
+}
+
+//- NOTE: The following function was commented out because it was replaced by
+//      random_in_hemisphere() and we want to avoid compiler warnings.
+//- vec3 random_unit_vector()
+// pub fn random_unit_vector() -> Vec3 {
+//     let a = rtweekend::random_double_in_range(0.0, 2.0 * rtweekend::PI);
+//     let z = rtweekend::random_double_in_range(-1.0, 1.0);
+//     let r = (1.0 - z * z).sqrt();
+//     Vec3 {
+//         e: [r * a.cos(), r * a.sin(), z],
+//     }
+// }
+
+//- vec3 random_in_hemisphere(const vec3& normal)
+pub fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
+    let in_unit_sphere = random_in_unit_sphere();
+    if dot(&in_unit_sphere, normal) > 0.0 {
+        return in_unit_sphere;
+    } else {
+        return -in_unit_sphere;
+    }
 }
