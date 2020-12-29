@@ -180,3 +180,7 @@ Section 10.1, 10.2, 10.3, 10.4, 10.5
 ------------------------------------
 - Changed `use std::rc` to `use std::rc::Rc`. Everything is verbose enough.
 - I know the use of material_left_two is a lazy hack, but it's late and it works.
+
+Section 11.1, 11.2
+------------------
+- Nothing new to add!

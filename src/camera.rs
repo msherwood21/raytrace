@@ -1,4 +1,5 @@
 use crate::ray;
+use crate::rtweekend;
 use crate::vec3;
 
 pub struct Camera {
@@ -9,39 +10,44 @@ pub struct Camera {
 }
 
 impl Camera {
-    //- camera()
-    pub fn new() -> Camera {
-        let aspect_ratio = 16.0 / 9.0;
-        let viewport_height = 2.0;
+    //- camera(
+    //      point3 lookfrom,
+    //      point3 lookat,
+    //      vec3   vup,
+    //      double vfov, // vertical field-of-view in degrees
+    //      double aspect_ratio
+    //  )
+    pub fn new(
+        lookfrom: vec3::Point3,
+        lookat: vec3::Point3,
+        vup: vec3::Point3,
+        vfov: f64,
+        aspect_ratio: f64,
+    ) -> Camera {
+        let theta = rtweekend::degrees_to_radians(vfov);
+        let h = (theta / 2.0).tan();
+        let viewport_height = 2.0 * h;
         let viewport_width = aspect_ratio * viewport_height;
-        let focal_length = 1.0;
 
-        let origin_calc = vec3::Point3 { e: [0.0, 0.0, 0.0] };
-        let horizontal_calc = vec3::Point3 {
-            e: [viewport_width, 0.0, 0.0],
-        };
-        let vertical_calc = vec3::Point3 {
-            e: [0.0, viewport_height, 0.0],
-        };
-        let lower_left_calc = origin_calc
-            - horizontal_calc / 2.0
-            - vertical_calc / 2.0
-            - vec3::Vec3 {
-                e: [0.0, 0.0, focal_length],
-            };
+        let w = vec3::unit_vector(lookfrom - lookat);
+        let u = vec3::unit_vector(vec3::cross(&vup, &w));
+        let v = vec3::cross(&w, &u);
+
+        let lower_left_calc =
+            lookfrom - (viewport_width * u) / 2.0 - (viewport_height * v) / 2.0 - w;
         Camera {
-            origin: origin_calc,
+            origin: lookfrom,
             lower_left_corner: lower_left_calc,
-            horizontal: horizontal_calc,
-            vertical: vertical_calc,
+            horizontal: viewport_width * u,
+            vertical: viewport_height * v,
         }
     }
 
-    //- ray get_ray(double u, double v) const
-    pub fn get_ray(&self, u: f64, v: f64) -> ray::Ray {
+    //- ray get_ray(double s, double t) const
+    pub fn get_ray(&self, s: f64, t: f64) -> ray::Ray {
         ray::Ray {
             orig: self.origin,
-            dir: self.lower_left_corner + u * self.horizontal + v * self.vertical - self.origin,
+            dir: self.lower_left_corner + s * self.horizontal + t * self.vertical - self.origin,
         }
     }
 }

@@ -110,7 +110,7 @@ fn main() {
         center: vec3::Point3 {
             e: [-1.0, 0.0, -1.0],
         },
-        radius: -0.4,
+        radius: -0.45,
         mat_ptr: material_left_two,
     }));
     world.add(Rc::new(sphere::Sphere {
@@ -122,7 +122,17 @@ fn main() {
     }));
 
     //- Camera
-    let cam = camera::Camera::new();
+    let cam = camera::Camera::new(
+        vec3::Point3 {
+            e: [-2.0, 2.0, 1.0],
+        },
+        vec3::Point3 {
+            e: [0.0, 0.0, -1.0],
+        },
+        vec3::Vec3 { e: [0.0, 1.0, 0.0] },
+        20.0,
+        aspect_ratio,
+    );
 
     //- Render
     //    Header
