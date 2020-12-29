@@ -191,9 +191,13 @@ pub fn dot(u: &Vec3, v: &Vec3) -> f64 {
 //- inline vec3 cross(const vec3 &u, const vec3 &v)
 #[inline]
 pub fn cross(u: &Vec3, v: &Vec3) -> Vec3 {
-    Vec3{ e: [u.e[1] * v.e[2] - u.e[2] * v.e[1],
-              u.e[2] * v.e[0] - u.e[0] * v.e[2],
-              u.e[0] * v.e[1] - u.e[1] * v.e[0]] }
+    Vec3 {
+        e: [
+            u.e[1] * v.e[2] - u.e[2] * v.e[1],
+            u.e[2] * v.e[0] - u.e[0] * v.e[2],
+            u.e[0] * v.e[1] - u.e[1] * v.e[0],
+        ],
+    }
 }
 
 //- inline vec3 unit_vector(vec3 v)
@@ -247,4 +251,21 @@ pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f64) -> Vec3 {
     let r_out_parallel = -((1.0 - r_out_perp.length_squared()).abs().sqrt()) * *n;
 
     r_out_perp + r_out_parallel
+}
+
+//- vec3 random_in_unit_disk()
+pub fn random_in_unit_disk() -> Vec3 {
+    loop {
+        let p = Vec3 {
+            e: [
+                rtweekend::random_double_in_range(-1.0, 1.0),
+                rtweekend::random_double_in_range(-1.0, 1.0),
+                0.0,
+            ],
+        };
+        if p.length_squared() >= 1.0 {
+            continue;
+        }
+        return p;
+    }
 }

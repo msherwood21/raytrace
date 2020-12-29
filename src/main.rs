@@ -122,16 +122,22 @@ fn main() {
     }));
 
     //- Camera
+    let lookfrom = vec3::Point3 { e: [3.0, 3.0, 2.0] };
+    let lookat = vec3::Point3 {
+        e: [0.0, 0.0, -1.0],
+    };
+    let vup = vec3::Vec3 { e: [0.0, 1.0, 0.0] };
+    let dist_to_focus = (lookfrom - lookat).length();
+    let aperture = 2.0;
+
     let cam = camera::Camera::new(
-        vec3::Point3 {
-            e: [-2.0, 2.0, 1.0],
-        },
-        vec3::Point3 {
-            e: [0.0, 0.0, -1.0],
-        },
-        vec3::Vec3 { e: [0.0, 1.0, 0.0] },
+        lookfrom,
+        lookat,
+        vup,
         20.0,
         aspect_ratio,
+        aperture,
+        dist_to_focus,
     );
 
     //- Render

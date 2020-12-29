@@ -7,6 +7,10 @@ pub struct Camera {
     lower_left_corner: vec3::Point3,
     horizontal: vec3::Point3,
     vertical: vec3::Point3,
+    u: vec3::Vec3,
+    v: vec3::Vec3,
+    w: vec3::Vec3,
+    lens_radius: f64,
 }
 
 impl Camera {
@@ -15,7 +19,9 @@ impl Camera {
     //      point3 lookat,
     //      vec3   vup,
     //      double vfov, // vertical field-of-view in degrees
-    //      double aspect_ratio
+    //      double aspect_ratio,
+    //      double aperture,
+    //      double focus_dist
     //  )
     pub fn new(
         lookfrom: vec3::Point3,
@@ -23,31 +29,46 @@ impl Camera {
         vup: vec3::Point3,
         vfov: f64,
         aspect_ratio: f64,
+        aperture: f64,
+        focus_dist: f64,
     ) -> Camera {
         let theta = rtweekend::degrees_to_radians(vfov);
         let h = (theta / 2.0).tan();
         let viewport_height = 2.0 * h;
         let viewport_width = aspect_ratio * viewport_height;
 
-        let w = vec3::unit_vector(lookfrom - lookat);
-        let u = vec3::unit_vector(vec3::cross(&vup, &w));
-        let v = vec3::cross(&w, &u);
-
+        //- This section is a hack to make translating between the C++ nicer
+        let origin_calc = lookfrom;
+        let w_calc = vec3::unit_vector(origin_calc - lookat);
+        let u_calc = vec3::unit_vector(vec3::cross(&vup, &w_calc));
+        let v_calc = vec3::cross(&w_calc, &u_calc);
+        let horizontal_calc = focus_dist * viewport_width * u_calc;
+        let vertical_calc = focus_dist * viewport_height * v_calc;
         let lower_left_calc =
-            lookfrom - (viewport_width * u) / 2.0 - (viewport_height * v) / 2.0 - w;
+            origin_calc - horizontal_calc / 2.0 - vertical_calc / 2.0 - focus_dist * w_calc;
+
         Camera {
-            origin: lookfrom,
+            origin: origin_calc,
             lower_left_corner: lower_left_calc,
-            horizontal: viewport_width * u,
-            vertical: viewport_height * v,
+            horizontal: horizontal_calc,
+            vertical: vertical_calc,
+            u: u_calc,
+            v: v_calc,
+            w: w_calc,
+            lens_radius: aperture / 2.0,
         }
     }
 
     //- ray get_ray(double s, double t) const
     pub fn get_ray(&self, s: f64, t: f64) -> ray::Ray {
+        let rd = self.lens_radius * vec3::random_in_unit_disk();
+        let offset = self.u * rd.x() + self.v * rd.y();
+
         ray::Ray {
-            orig: self.origin,
-            dir: self.lower_left_corner + s * self.horizontal + t * self.vertical - self.origin,
+            orig: self.origin + offset,
+            dir: self.lower_left_corner + s * self.horizontal + t * self.vertical
+                - self.origin
+                - offset,
         }
     }
 }
