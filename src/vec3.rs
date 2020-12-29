@@ -231,3 +231,14 @@ pub fn random_unit_vector() -> Vec3 {
 pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
     *v - 2.0 * dot(v, n) * *n
 }
+
+//- vec3 refract(const vec3& uv, const vec3& n, double etai_over_etat)
+pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f64) -> Vec3 {
+    //- &-* is the strangest symbol combo I've seen...Pass by reference
+    //  the negated Vec3 created from the reference uv.
+    let cos_theta = dot(&-*uv, n);
+    let r_out_perp = etai_over_etat * (*uv + cos_theta * *n);
+    let r_out_parallel = -((1.0 - r_out_perp.length_squared()).abs().sqrt()) * *n;
+
+    r_out_perp + r_out_parallel
+}

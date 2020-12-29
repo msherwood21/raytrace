@@ -9,7 +9,7 @@ mod sphere;
 mod vec3;
 use std::env;
 use std::io;
-use std::rc;
+use std::rc::Rc;
 
 fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: i32) -> vec3::Color {
     let mut rec = hittable::HitRecord::new();
@@ -27,7 +27,7 @@ fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: i32) -> vec3::
                 if val.scatter(r, &rec, &mut attenuation, &mut scattered) {
                     return attenuation * ray_color(&scattered, world, depth - 1);
                 }
-            },
+            }
             None => return vec3::Color::new(),
         }
 
@@ -71,40 +71,49 @@ fn main() {
     let mut world = hittable_list::HittableList::new();
 
     let material_ground =
-        rc::Rc::<material::Lambertian>::new(material::Lambertian::new(&vec3::Color {
+        Rc::<material::Lambertian>::new(material::Lambertian::new(&vec3::Color {
             e: [0.8, 0.8, 0.0],
         }));
     let material_center =
-        rc::Rc::<material::Lambertian>::new(material::Lambertian::new(&vec3::Color {
-            e: [0.7, 0.3, 0.3],
+        Rc::<material::Lambertian>::new(material::Lambertian::new(&vec3::Color {
+            e: [0.1, 0.2, 0.5],
         }));
-    let material_left =
-        rc::Rc::<material::Metal>::new(material::Metal::new(&vec3::Color { e: [0.8, 0.8, 0.8] }, 0.3));
-    let material_right =
-        rc::Rc::<material::Metal>::new(material::Metal::new(&vec3::Color { e: [0.8, 0.6, 0.2] }, 1.0));
+    let material_left = Rc::<material::Dielectric>::new(material::Dielectric::new(1.5));
+    let material_left_two = Rc::<material::Dielectric>::new(material::Dielectric::new(1.5));
+    let material_right = Rc::<material::Metal>::new(material::Metal::new(
+        &vec3::Color { e: [0.8, 0.6, 0.2] },
+        0.0,
+    ));
 
-    world.add(rc::Rc::new(sphere::Sphere {
+    world.add(Rc::new(sphere::Sphere {
         center: vec3::Point3 {
             e: [0.0, -100.5, -1.0],
         },
         radius: 100.0,
         mat_ptr: material_ground,
     }));
-    world.add(rc::Rc::new(sphere::Sphere {
+    world.add(Rc::new(sphere::Sphere {
         center: vec3::Point3 {
             e: [0.0, 0.0, -1.0],
         },
         radius: 0.5,
         mat_ptr: material_center,
     }));
-    world.add(rc::Rc::new(sphere::Sphere {
+    world.add(Rc::new(sphere::Sphere {
         center: vec3::Point3 {
             e: [-1.0, 0.0, -1.0],
         },
         radius: 0.5,
         mat_ptr: material_left,
     }));
-    world.add(rc::Rc::new(sphere::Sphere {
+    world.add(Rc::new(sphere::Sphere {
+        center: vec3::Point3 {
+            e: [-1.0, 0.0, -1.0],
+        },
+        radius: -0.4,
+        mat_ptr: material_left_two,
+    }));
+    world.add(Rc::new(sphere::Sphere {
         center: vec3::Point3 {
             e: [1.0, 0.0, -1.0],
         },

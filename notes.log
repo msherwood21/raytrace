@@ -175,3 +175,8 @@ Section 9.1, 9.2, 9.3, 9.4, 9.5
   initialized with something.
   - Solved the problem by wrapping the `Rc` with an `Option` and using pattern matching in
     `main::ray_color`. I'm almost certain there's a better way to do this, but I'm learning!
+
+Section 10.1, 10.2, 10.3, 10.4, 10.5
+------------------------------------
+- Changed `use std::rc` to `use std::rc::Rc`. Everything is verbose enough.
+- I know the use of material_left_two is a lazy hack, but it's late and it works.
