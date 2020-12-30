@@ -1,21 +1,32 @@
-Raytrace Rust
-=============
+Raytrace
+========
 
-## What Is This?
-The results of me going through [Ray Tracing In One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
-Instead of coding it in C++, I'm doing it in Rust to teach myself the language. This has already been
-done elsewhere (look [here](https://github.com/RayTracing/raytracing.github.io/wiki/Implementations-in-Other-Languages])),
-but I will not be looking at that source until I've tried my hand here.
+Initially this was the result of me going through
+[Ray Tracing In One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
+Instead of coding it in C++, I did it in Rust to teach myself the language.
 
-### Note
-I have reached the end of the book and have committed the [final image](final.ppm). The final book commit has been tagged.
+Now that I've accomplished that goal I'm creating a UI to manipulate the scene and re-render
+images without changing code, recompiling and re-running.
 
-## Can I Use It?
-Check the [License](License.md) file for usage details
+I've committed my run of the [final render](final.ppm) from section 13.1 of the book. The render
+took several hours on a Surface Pro 6 so I decided to spare future observers the pain.
 
-## Can I Add To It?
-Just fork it and go on your merry way. Once I'm done learning I will not be touching the repository again.
+## Usage
+Check the [License](License.md) file for usage details. The license did change post commit
+0290a252f1188b6afc0a94aaaee09cc12e0f91e.
+
+## Contributing
+Just fork it and go on your merry way. Once I'm done learning I will not be touching the repository
+again.
 
 ## Versions
 - Rust toolchain: 1.45.1
 - Ray Tracing In One Weekend: v3.2.0
+
+## Roadmap To Goal
+- Refactor to library
+  - Create binary that essentially calls main
+- Tests
+- Docs
+- GUI prototype
+- GUI binary
