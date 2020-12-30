@@ -25,8 +25,10 @@ again.
 
 ## Roadmap To Goal
 - Refactor to library
-  - Create binary that essentially calls main
+  - ~~Create binary that essentially calls main~~
 - Tests
+  - Identify functions for unit tests
+  - Create integration test(s)
 - Docs
 - GUI prototype
 - GUI binary

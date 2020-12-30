@@ -129,7 +129,7 @@ fn random_scene() -> hittable_list::HittableList {
     return world;
 }
 
-fn main() {
+pub fn run() {
     //- Image
     let mut image_width: u32 = 1200;
     let mut arg_iter = env::args().peekable();
