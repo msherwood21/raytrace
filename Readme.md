@@ -7,6 +7,9 @@ Instead of coding it in C++, I'm doing it in Rust to teach myself the language. 
 done elsewhere (look [here](https://github.com/RayTracing/raytracing.github.io/wiki/Implementations-in-Other-Languages])),
 but I will not be looking at that source until I've tried my hand here.
 
+### Note
+I have reached the end of the book and have committed the [final image](final.ppm). The final book commit has been tagged.
+
 ## Can I Use It?
 Check the [License](License.md) file for usage details
 

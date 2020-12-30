@@ -39,9 +39,99 @@ fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: i32) -> vec3::
     (1.0 - t) * vec3::Color { e: [1.0, 1.0, 1.0] } + t * vec3::Color { e: [0.5, 0.7, 1.0] }
 }
 
+fn random_scene() -> hittable_list::HittableList {
+    let mut world = hittable_list::HittableList::new();
+
+    let ground_material =
+        Rc::<material::Lambertian>::new(material::Lambertian::new(&vec3::Color {
+            e: [0.5, 0.5, 0.5],
+        }));
+    world.add(Rc::new(sphere::Sphere {
+        center: vec3::Point3 {
+            e: [0.0, -1000.0, 0.0],
+        },
+        radius: 1000.0,
+        mat_ptr: ground_material,
+    }));
+
+    for a in -11..11 {
+        for b in -11..11 {
+            let choose_mat = rtweekend::random_double();
+            let center = vec3::Point3 {
+                e: [
+                    f64::from(a) + 0.9 * rtweekend::random_double(),
+                    0.2,
+                    f64::from(b) + 0.9 * rtweekend::random_double(),
+                ],
+            };
+
+            if (center - vec3::Point3 { e: [4.0, 0.2, 0.0] }).length() > 0.9 {
+                if choose_mat < 0.8 {
+                    //- diffuse
+                    let albedo = vec3::Color::random() * vec3::Color::random();
+                    let sphere_material = Rc::new(material::Lambertian::new(&albedo));
+                    world.add(Rc::new(sphere::Sphere {
+                        center: center,
+                        radius: 0.2,
+                        mat_ptr: sphere_material,
+                    }));
+                } else if choose_mat < 0.95 {
+                    //- metal
+                    let albedo = vec3::Color::random_range(0.5, 1.0);
+                    let fuzz = rtweekend::random_double_in_range(0.0, 0.5);
+                    let sphere_material = Rc::new(material::Metal::new(&albedo, fuzz));
+                    world.add(Rc::new(sphere::Sphere {
+                        center: center,
+                        radius: 0.2,
+                        mat_ptr: sphere_material,
+                    }));
+                } else {
+                    //- glass
+                    let sphere_material = Rc::new(material::Dielectric::new(1.5));
+                    world.add(Rc::new(sphere::Sphere {
+                        center: center,
+                        radius: 0.2,
+                        mat_ptr: sphere_material,
+                    }));
+                }
+            }
+        }
+    }
+
+    let material1 = Rc::new(material::Dielectric::new(1.5));
+    world.add(Rc::new(sphere::Sphere {
+        center: vec3::Point3 { e: [0.0, 1.0, 0.0] },
+        radius: 1.0,
+        mat_ptr: material1,
+    }));
+
+    let material2 = Rc::new(material::Lambertian::new(&vec3::Color {
+        e: [0.4, 0.2, 0.1],
+    }));
+    world.add(Rc::new(sphere::Sphere {
+        center: vec3::Point3 {
+            e: [-4.0, 1.0, 0.0],
+        },
+        radius: 1.0,
+        mat_ptr: material2,
+    }));
+
+    let material3 = Rc::new(material::Metal::new(
+        &vec3::Color { e: [0.7, 0.6, 0.5] },
+        0.0,
+    ));
+    world.add(Rc::new(sphere::Sphere {
+        center: vec3::Point3 { e: [4.0, 1.0, 0.0] },
+        radius: 1.0,
+        mat_ptr: material3,
+    }));
+
+    return world;
+}
+
 fn main() {
     //- Image
-    let mut image_width: u32 = 400;
+    let mut image_width: u32 = 1200;
     let mut arg_iter = env::args().peekable();
     while arg_iter.peek() != None {
         let opt = arg_iter
@@ -57,9 +147,9 @@ fn main() {
         }
     }
 
-    let aspect_ratio = 16.0 / 9.0;
+    let aspect_ratio = 3.0 / 2.0;
     let image_height: i32 = (f64::from(image_width) / aspect_ratio) as i32;
-    let samples_per_pixel = 100;
+    let samples_per_pixel = 500;
     let max_depth = 50;
 
     eprintln!(
@@ -68,67 +158,16 @@ fn main() {
     );
 
     //- World
-    let mut world = hittable_list::HittableList::new();
-
-    let material_ground =
-        Rc::<material::Lambertian>::new(material::Lambertian::new(&vec3::Color {
-            e: [0.8, 0.8, 0.0],
-        }));
-    let material_center =
-        Rc::<material::Lambertian>::new(material::Lambertian::new(&vec3::Color {
-            e: [0.1, 0.2, 0.5],
-        }));
-    let material_left = Rc::<material::Dielectric>::new(material::Dielectric::new(1.5));
-    let material_left_two = Rc::<material::Dielectric>::new(material::Dielectric::new(1.5));
-    let material_right = Rc::<material::Metal>::new(material::Metal::new(
-        &vec3::Color { e: [0.8, 0.6, 0.2] },
-        0.0,
-    ));
-
-    world.add(Rc::new(sphere::Sphere {
-        center: vec3::Point3 {
-            e: [0.0, -100.5, -1.0],
-        },
-        radius: 100.0,
-        mat_ptr: material_ground,
-    }));
-    world.add(Rc::new(sphere::Sphere {
-        center: vec3::Point3 {
-            e: [0.0, 0.0, -1.0],
-        },
-        radius: 0.5,
-        mat_ptr: material_center,
-    }));
-    world.add(Rc::new(sphere::Sphere {
-        center: vec3::Point3 {
-            e: [-1.0, 0.0, -1.0],
-        },
-        radius: 0.5,
-        mat_ptr: material_left,
-    }));
-    world.add(Rc::new(sphere::Sphere {
-        center: vec3::Point3 {
-            e: [-1.0, 0.0, -1.0],
-        },
-        radius: -0.45,
-        mat_ptr: material_left_two,
-    }));
-    world.add(Rc::new(sphere::Sphere {
-        center: vec3::Point3 {
-            e: [1.0, 0.0, -1.0],
-        },
-        radius: 0.5,
-        mat_ptr: material_right,
-    }));
+    let world = random_scene();
 
     //- Camera
-    let lookfrom = vec3::Point3 { e: [3.0, 3.0, 2.0] };
-    let lookat = vec3::Point3 {
-        e: [0.0, 0.0, -1.0],
+    let lookfrom = vec3::Point3 {
+        e: [13.0, 2.0, 3.0],
     };
+    let lookat = vec3::Point3 { e: [0.0, 0.0, 0.0] };
     let vup = vec3::Vec3 { e: [0.0, 1.0, 0.0] };
-    let dist_to_focus = (lookfrom - lookat).length();
-    let aperture = 2.0;
+    let dist_to_focus = 10.0;
+    let aperture = 0.1;
 
     let cam = camera::Camera::new(
         lookfrom,
@@ -150,6 +189,10 @@ fn main() {
         eprint!("\rScanlines remaining: {:#04}", j);
 
         for i in 0..image_width {
+            if i % 100 == 0 {
+                eprint!(".");
+            }
+
             let mut pixel_color = vec3::Color { e: [0.0, 0.0, 0.0] };
             for _s in 0..samples_per_pixel {
                 let u = (f64::from(i) + rtweekend::random_double()) / f64::from(image_width - 1);

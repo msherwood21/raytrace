@@ -188,3 +188,9 @@ Section 11.1, 11.2
 Section 12.1, 12.2
 ------------------
 - Nothing new to add!
+
+Section 13.1
+------------
+- I added a progress bar for longer renders. The cursor will create a new period every 100
+  vertical pixels.
+- The render took 12+ hours on a Surface Pro 6. As such, I'm committing the image.
