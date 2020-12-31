@@ -1,36 +1,41 @@
+//! A collection of `Hittable` objects and associated helper functions.
+
 use crate::hittable;
 use crate::ray;
 use std::rc;
 use std::vec;
 
+/// A collection of `Hittable` objects.
 pub struct HittableList {
     objects: vec::Vec<rc::Rc<dyn hittable::Hittable>>,
 }
 
 impl HittableList {
-    //- hittable_list() {}
     pub fn new() -> HittableList {
         HittableList {
             objects: vec::Vec::new(),
         }
     }
 
-    //- hittable_list(shared_ptr<hittable> object) { add(object); }
-    //- NOTE: Call new() then add().
-
     //- void clear() { objects.clear(); }
     // pub fn clear(&mut self) {
     //     self.objects.clear();
     // }
 
-    //- void add(shared_ptr<hittable> object) { objects.push_back(object); }
+    /// Add a reference counted pointer to the list of `Hittable` objects.
+    ///
+    /// If the calling function already has a reference to the object pointed to by `objects` then
+    /// the parent object must use `Rc::clone()`.
     pub fn add(&mut self, object: rc::Rc<dyn hittable::Hittable>) {
         self.objects.push(object);
     }
 }
 
-//- virtual bool hit(const ray& r, double tmin, double tmax, hit_record& rec) const override;
 impl hittable::Hittable for HittableList {
+    /// Determines if any object in its collection is hit by ray `r`.
+    ///
+    /// If the ray can hit multiple objects in the collection the object closest to `t_min` is
+    /// returned in `rec`.
     fn hit(&self, r: &ray::Ray, t_min: f64, t_max: f64, rec: &mut hittable::HitRecord) -> bool {
         let mut hit_anything = false;
         let mut closest_so_far = t_max;

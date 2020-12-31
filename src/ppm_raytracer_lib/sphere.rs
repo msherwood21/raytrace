@@ -1,3 +1,5 @@
+//! Definition of the `Hittable` sphere.
+
 use crate::hittable;
 use crate::material;
 use crate::ray;
@@ -8,20 +10,6 @@ pub struct Sphere {
     pub center: vec3::Point3,
     pub radius: f64,
     pub mat_ptr: rc::Rc<dyn material::Material>,
-}
-
-impl Sphere {
-    //- sphere() {}
-    // pub fn new() -> Sphere {
-    //     Sphere {
-    //         center: vec3::Point3::new(),
-    //         radius: 0.0,
-    //     }
-    // }
-
-    //- Implemented through positional arguments
-    //- sphere(point3 cen, double r, shared_ptr<material> m)
-    //      : center(cen), radius(r), mat_ptr(m) {};
 }
 
 impl hittable::Hittable for Sphere {

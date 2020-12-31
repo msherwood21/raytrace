@@ -1,3 +1,5 @@
+//! A viewport through which the raytracer can create an image.
+
 use crate::ray;
 use crate::rtweekend;
 use crate::vec3;
@@ -14,15 +16,9 @@ pub struct Camera {
 }
 
 impl Camera {
-    //- camera(
-    //      point3 lookfrom,
-    //      point3 lookat,
-    //      vec3   vup,
-    //      double vfov, // vertical field-of-view in degrees
-    //      double aspect_ratio,
-    //      double aperture,
-    //      double focus_dist
-    //  )
+    /// Creates a new Camera object.
+    ///
+    /// `vfov` stands for vertical field-of-view in degrees.
     pub fn new(
         lookfrom: vec3::Point3,
         lookat: vec3::Point3,
@@ -59,10 +55,12 @@ impl Camera {
         }
     }
 
-    //- ray get_ray(double s, double t) const
+    /// Returns a ray located from (s, t) on the camera plane emanating away from the viewer.
+    ///
+    /// The ray has been "defocused" or had depth-of-field processing applied to it.
     pub fn get_ray(&self, s: f64, t: f64) -> ray::Ray {
-        let rd = self.lens_radius * vec3::random_in_unit_disk();
-        let offset = self.u * rd.x() + self.v * rd.y();
+        let radian = self.lens_radius * vec3::random_in_unit_disk();
+        let offset = self.u * radian.x() + self.v * radian.y();
 
         ray::Ray {
             orig: self.origin + offset,

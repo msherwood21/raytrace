@@ -1,3 +1,5 @@
+//! Defines the `Vec3` type and its associated functions for use with 3D geometry and color.
+
 use crate::rtweekend;
 use std::clone;
 use std::marker;
@@ -8,43 +10,36 @@ pub struct Vec3 {
 }
 
 impl Vec3 {
-    //- vec3() : e{0, 0, 0} {}
     pub fn new() -> Vec3 {
         Vec3 { e: [0.0, 0.0, 0.0] }
     }
-    //- NOTE: The following is implemented through positional arguments
-    //- vec3(double e0, double e1, double e2)
 
-    //- double x() const { return e[0]; }
+    /// Returns the x in an (x,y,z) coordinate.
     pub fn x(&self) -> f64 {
         self.e[0]
     }
-    //- double y() const { return e[1]; }
+
+    /// Returns the y in an (x,y,z) coordinate.
     pub fn y(&self) -> f64 {
         self.e[1]
     }
-    //- double z() const { return e[2]; }
+
+    /// Returns the z in an (x,y,z) coordinate.
     pub fn z(&self) -> f64 {
         self.e[2]
     }
 
-    //- double operator[](int i) const { return e[i]; }
-    //- double& operator[](int i) { return e[i]; }
-
-    //- vec3& operator*=(const double t);
-    //- vec3& operator/=(const double t);
-
-    //- double length() const
+    /// Returns the length of the vector from the point of origin.
     pub fn length(&self) -> f64 {
         self.length_squared().sqrt()
     }
 
-    //- double length_squared() const
+    /// Returns the length squared of the vector from the point of origin.
     pub fn length_squared(&self) -> f64 {
         (self.e[0] * self.e[0]) + (self.e[1] * self.e[1]) + (self.e[2] * self.e[2])
     }
 
-    //- inline static vec3 random()
+    /// Returns a `Vec3` with randomly assigned values ranging from 0.0 to 1.0.
     #[inline]
     pub fn random() -> Vec3 {
         Vec3 {
@@ -56,7 +51,7 @@ impl Vec3 {
         }
     }
 
-    //- inline static vec3 random(double min, double max)
+    /// Returns a `Vec3` with randomly assigned values ranging from `min` to `max`.
     #[inline]
     pub fn random_range(min: f64, max: f64) -> Vec3 {
         Vec3 {
@@ -69,11 +64,12 @@ impl Vec3 {
     }
 }
 
-//- Aliased types
+/// Represents a point in 3D space.
 pub type Point3 = Vec3;
+/// Represents an RGB color.
 pub type Color = Vec3;
 
-//- Traits and utility functions
+
 impl marker::Copy for Vec3 {}
 
 impl clone::Clone for Vec3 {
@@ -82,7 +78,6 @@ impl clone::Clone for Vec3 {
     }
 }
 
-//- vec3 operator-() const { return vec3(-e[0], -e[1], -e[2]); }
 impl ops::Neg for Vec3 {
     type Output = Vec3;
 
@@ -93,7 +88,6 @@ impl ops::Neg for Vec3 {
     }
 }
 
-//- vec3& operator+=(const vec3 &v);
 impl ops::AddAssign<Vec3> for Vec3 {
     fn add_assign(&mut self, rhs: Vec3) {
         self.e[0] += rhs.e[0];
@@ -102,7 +96,6 @@ impl ops::AddAssign<Vec3> for Vec3 {
     }
 }
 
-//- inline vec3 operator+(const vec3 &u, const vec3 &v)
 impl ops::Add<Vec3> for Vec3 {
     type Output = Vec3;
 
@@ -118,7 +111,6 @@ impl ops::Add<Vec3> for Vec3 {
     }
 }
 
-//- inline vec3 operator-(const vec3 &u, const vec3 &v)
 impl ops::Sub<Vec3> for Vec3 {
     type Output = Vec3;
 
@@ -134,7 +126,6 @@ impl ops::Sub<Vec3> for Vec3 {
     }
 }
 
-//- inline vec3 operator*(const vec3 &u, const vec3 &v)
 impl ops::Mul<Vec3> for Vec3 {
     type Output = Vec3;
 
@@ -150,7 +141,6 @@ impl ops::Mul<Vec3> for Vec3 {
     }
 }
 
-//- inline vec3 operator*(double t, const vec3 &v)
 impl ops::Mul<Vec3> for f64 {
     type Output = Vec3;
 
@@ -162,7 +152,6 @@ impl ops::Mul<Vec3> for f64 {
     }
 }
 
-//- inline vec3 operator*(const vec3 &v, double t)
 impl ops::Mul<f64> for Vec3 {
     type Output = Vec3;
 
@@ -172,7 +161,6 @@ impl ops::Mul<f64> for Vec3 {
     }
 }
 
-//- inline vec3 operator/(vec3 v, double t)
 impl ops::Div<f64> for Vec3 {
     type Output = Vec3;
 
@@ -182,13 +170,13 @@ impl ops::Div<f64> for Vec3 {
     }
 }
 
-//- inline double dot(const vec3 &u, const vec3 &v)
+/// Returns the dot product of two passed in vectors.
 #[inline]
 pub fn dot(u: &Vec3, v: &Vec3) -> f64 {
     (u.e[0] * v.e[0]) + (u.e[1] * v.e[1]) + (u.e[2] * v.e[2])
 }
 
-//- inline vec3 cross(const vec3 &u, const vec3 &v)
+/// Returns the cross product of two passed in vectors.
 #[inline]
 pub fn cross(u: &Vec3, v: &Vec3) -> Vec3 {
     Vec3 {
@@ -200,13 +188,13 @@ pub fn cross(u: &Vec3, v: &Vec3) -> Vec3 {
     }
 }
 
-//- inline vec3 unit_vector(vec3 v)
+/// Returns the unit vector of the passed in vector.
 #[inline]
 pub fn unit_vector(v: Vec3) -> Vec3 {
     v / v.length()
 }
 
-//- vec3 random_in_unit_sphere()
+/// Returns a `Vec3` whose squared length is less than 1.0.
 pub fn random_in_unit_sphere() -> Vec3 {
     loop {
         let p = Vec3::random_range(-1.0, 1.0);
@@ -217,7 +205,7 @@ pub fn random_in_unit_sphere() -> Vec3 {
     }
 }
 
-//- vec3 random_unit_vector()
+/// Returns a random `Vec3` following a Lambertian distribution.
 pub fn random_unit_vector() -> Vec3 {
     let a = rtweekend::random_double_in_range(0.0, 2.0 * rtweekend::PI);
     let z = rtweekend::random_double_in_range(-1.0, 1.0);
@@ -227,22 +215,18 @@ pub fn random_unit_vector() -> Vec3 {
     }
 }
 
-//- vec3 random_in_hemisphere(const vec3& normal)
-// pub fn random_in_hemisphere(normal: &Vec3) -> Vec3 {
-//     let in_unit_sphere = random_in_unit_sphere();
-//     if dot(&in_unit_sphere, normal) > 0.0 {
-//         return in_unit_sphere;
-//     } else {
-//         return -in_unit_sphere;
-//     }
-// }
-
-//- vec3 reflect(const vec3& v, const vec3& n)
+/// Returns a reflected `Vec3` satisfying the equation v + 2b.
+/// 
+/// `n` is a unit vector at which `v` is directed. b can be restated as the dot product of `v` and
+/// `n`.
 pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
     *v - 2.0 * dot(v, n) * *n
 }
 
-//- vec3 refract(const vec3& uv, const vec3& n, double etai_over_etat)
+/// Returns a refracted direction from the original direction represented by `uv`.
+/// 
+/// `uv` stands for unit direction, `n` stands for normal, and etai_over_etat represents the
+/// refractive property of the surface.
 pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f64) -> Vec3 {
     //- &-* is the strangest symbol combo I've seen...Pass by reference
     //  the negated Vec3 created from the reference uv.
@@ -253,7 +237,7 @@ pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f64) -> Vec3 {
     r_out_perp + r_out_parallel
 }
 
-//- vec3 random_in_unit_disk()
+/// Returns a `Vec3` whose squared length is less than 1.0 and z coordinate is 0.0.
 pub fn random_in_unit_disk() -> Vec3 {
     loop {
         let p = Vec3 {

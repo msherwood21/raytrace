@@ -1,3 +1,7 @@
+//! An implementation of the raytracer from
+//! [Ray Tracing In One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html)
+//! in Rust.
+
 mod camera;
 mod color;
 mod hittable;
@@ -11,6 +15,10 @@ use std::env;
 use std::io;
 use std::rc::Rc;
 
+/// Returns a `vec3::Color` specifying the color of ray `r`.
+///
+/// `world` is a collection of all objects in the world. `depth` specifies how many times this
+/// function can be called recursively before returning a default `vec3::Color`.
 fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: i32) -> vec3::Color {
     let mut rec = hittable::HitRecord::new();
 
@@ -39,6 +47,7 @@ fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: i32) -> vec3::
     (1.0 - t) * vec3::Color { e: [1.0, 1.0, 1.0] } + t * vec3::Color { e: [0.5, 0.7, 1.0] }
 }
 
+/// Creates a random world of objects with matte, metal and dielectric material surfaces.
 fn random_scene() -> hittable_list::HittableList {
     let mut world = hittable_list::HittableList::new();
 
@@ -129,6 +138,9 @@ fn random_scene() -> hittable_list::HittableList {
     return world;
 }
 
+/// Executes one iteration of the raytracer.
+///
+/// This is the main entry point for any consumers of this library.
 pub fn run() {
     //- Image
     let mut image_width: u32 = 1200;
