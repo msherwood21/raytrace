@@ -48,8 +48,15 @@ fn ray_color(r: &ray::Ray, world: &dyn hittable::Hittable, depth: i32) -> vec3::
 }
 
 /// Creates a random world of objects with matte, metal and dielectric material surfaces.
-fn random_scene() -> hittable_list::HittableList {
+/// 
+/// `x` and `z` are used to determine the number of spheres and their location. The number of
+/// spheres is x.abs() * 2 if the value is negative or x if the value is positive.
+fn random_scene(x: i32, z: i32) -> hittable_list::HittableList {
     let mut world = hittable_list::HittableList::new();
+    let x_min = if x.abs() == x { 0 } else { x };
+    let x_max = if x < 0 { x.abs() } else { 0 };
+    let z_min = if z.abs() == z { 0 } else { z };
+    let z_max = if z < 0 { z.abs() } else { 0 };
 
     let ground_material =
         Rc::<material::Lambertian>::new(material::Lambertian::new(&vec3::Color {
@@ -63,8 +70,8 @@ fn random_scene() -> hittable_list::HittableList {
         mat_ptr: ground_material,
     }));
 
-    for a in -11..11 {
-        for b in -11..11 {
+    for a in x_min..x_max {
+        for b in z_min..z_max {
             let choose_mat = rtweekend::random_double();
             let center = vec3::Point3 {
                 e: [
@@ -138,12 +145,47 @@ fn random_scene() -> hittable_list::HittableList {
     return world;
 }
 
-/// Executes one iteration of the raytracer.
+/// World data needed by the renderer.
 ///
-/// This is the main entry point for any consumers of this library.
-pub fn run() {
+/// Not intended to be modified by the caller.
+pub struct SceneData {
+    image_width: u32,
+    image_height: i32,
+    samples_per_pixel: i32,
+    max_ray_hits: i32,
+    world: hittable_list::HittableList,
+    camera: camera::Camera,
+}
+
+impl SceneData {
+    pub fn new() -> SceneData {
+        SceneData {
+            image_width: 0,
+            image_height: 0,
+            samples_per_pixel: 0,
+            max_ray_hits: 0,
+            world: hittable_list::HittableList::new(),
+            camera: camera::Camera::new(
+                vec3::Vec3 { e: [0.0, 0.0, 0.0] },
+                vec3::Point3 { e: [0.0, 0.0, 0.0] },
+                vec3::Point3 { e: [0.0, 0.0, 0.0] },
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            ),
+        }
+    }
+}
+
+/// Initializes scene data and private data sctructures.
+///
+/// For any consumers of this library this must be called first.
+pub fn init() -> SceneData {
+    let mut data = SceneData::new();
+
     //- Image
-    let mut image_width: u32 = 1200;
+    data.image_width = 1200;
     let mut arg_iter = env::args().peekable();
     while arg_iter.peek() != None {
         let opt = arg_iter
@@ -151,7 +193,7 @@ pub fn run() {
             .expect("Invalid iterator value after initial peek");
 
         if opt == "--width" || opt == "-w" {
-            image_width = arg_iter
+            data.image_width = arg_iter
                 .next()
                 .expect("You must pass an argument to the width argument")
                 .parse::<u32>()
@@ -160,17 +202,17 @@ pub fn run() {
     }
 
     let aspect_ratio = 3.0 / 2.0;
-    let image_height: i32 = (f64::from(image_width) / aspect_ratio) as i32;
-    let samples_per_pixel = 500;
-    let max_depth = 50;
+    data.image_height = (f64::from(data.image_width) / aspect_ratio) as i32;
+    data.samples_per_pixel = 500;
+    data.max_ray_hits = 50;
 
     eprintln!(
         "Creating image with a resolution of {}x{}",
-        image_width, image_height
+        data.image_width, data.image_height
     );
 
     //- World
-    let world = random_scene();
+    data.world = random_scene(-11, -11);
 
     //- Camera
     let lookfrom = vec3::Point3 {
@@ -181,7 +223,7 @@ pub fn run() {
     let dist_to_focus = 10.0;
     let aperture = 0.1;
 
-    let cam = camera::Camera::new(
+    data.camera = camera::Camera::new(
         lookfrom,
         lookat,
         vup,
@@ -191,28 +233,34 @@ pub fn run() {
         dist_to_focus,
     );
 
-    //- Render
+    data
+}
+
+/// Executes one iteration of the raytracer.
+pub fn render(data: &SceneData) {
     //    Header
-    println!("P3\n{} {}\n255", image_width, image_height);
+    println!("P3\n{} {}\n255", data.image_width, data.image_height);
 
     //    Body
-    for j in (0..image_height).rev() {
+    for j in (0..data.image_height).rev() {
         //- Progress bar
         eprint!("\rScanlines remaining: {:#04}", j);
 
-        for i in 0..image_width {
+        for i in 0..data.image_width {
             if i % 100 == 0 {
                 eprint!(".");
             }
 
             let mut pixel_color = vec3::Color { e: [0.0, 0.0, 0.0] };
-            for _s in 0..samples_per_pixel {
-                let u = (f64::from(i) + rtweekend::random_double()) / f64::from(image_width - 1);
-                let v = (f64::from(j) + rtweekend::random_double()) / f64::from(image_height - 1);
-                let r = cam.get_ray(u, v);
-                pixel_color += ray_color(&r, &world, max_depth);
+            for _s in 0..data.samples_per_pixel {
+                let u =
+                    (f64::from(i) + rtweekend::random_double()) / f64::from(data.image_width - 1);
+                let v =
+                    (f64::from(j) + rtweekend::random_double()) / f64::from(data.image_height - 1);
+                let r = data.camera.get_ray(u, v);
+                pixel_color += ray_color(&r, &data.world, data.max_ray_hits);
             }
-            color::write_color(&mut io::stdout(), pixel_color, samples_per_pixel);
+            color::write_color(&mut io::stdout(), pixel_color, data.samples_per_pixel);
         }
     }
 

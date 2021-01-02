@@ -8,5 +8,6 @@ use libraytracer;
 /// As the library is refactored the implementation of this function will become the living docs
 /// for using it.
 fn main() {
-    libraytracer::run();
+    let data = libraytracer::init();
+    libraytracer::render(&data);
 }
