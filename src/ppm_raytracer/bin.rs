@@ -9,5 +9,5 @@ use libraytracer;
 /// for using it.
 fn main() {
     let data = libraytracer::init();
-    libraytracer::render(&data);
+    libraytracer::render(data);
 }

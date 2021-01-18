@@ -23,6 +23,17 @@ render and providing real time render updates.
 - Can't capture real time render updates due to a lack of threading and output options
 
 # Proposed Design (Updated as more info becomes clear)
-- Create `render` module in `lib.rs`
-  - Rename `lib::run` to `render::init` to setup scene data
-  - Move the rendering loop and supported operations to public `render` functions
+- `render` module
+  - Rename `lib::run` to `init` to setup scene data
+  - Move the rendering loop and supported operations to `render` functions
+- `command` module
+  - Contains `config` struct related to user modifiable values
+  - Performs actions related to user commands
+- `scene_data` module
+  - Collection of all data needed by renderer
+  - Set and query values for `SceneData` struct
+- Threaded interface
+  - Control thread sets values, starts rendering and cancels rendering
+  - Render thread to create the image
+  - `command` module is entry point for control thread.
+  - `render` module is entry point for render thread. Private interface.
