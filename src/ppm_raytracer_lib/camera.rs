@@ -4,6 +4,7 @@ use crate::ray;
 use crate::rtweekend;
 use crate::vec3;
 
+#[derive(Clone, Copy, Debug)]
 pub struct Camera {
     origin: vec3::Point3,
     lower_left_corner: vec3::Point3,
@@ -52,6 +53,22 @@ impl Camera {
             v: v_calc,
             w: w_calc,
             lens_radius: aperture / 2.0,
+        }
+    }
+
+    /// Creates a incorrectly setup camera.
+    /// 
+    /// A hack for now. Will be revised in future commits.
+    pub const fn busted_new() -> Camera {
+        Camera {
+            origin:vec3::Vec3 { e: [0.0, 0.0, 0.0] },
+            lower_left_corner:vec3::Vec3 { e: [0.0, 0.0, 0.0] },
+            horizontal:vec3::Vec3 { e: [0.0, 0.0, 0.0] },
+            vertical:vec3::Vec3 { e: [0.0, 0.0, 0.0] },
+            u:vec3::Vec3 { e: [0.0, 0.0, 0.0] },
+            v:vec3::Vec3 { e: [0.0, 0.0, 0.0] },
+            w:vec3::Vec3 { e: [0.0, 0.0, 0.0] },
+            lens_radius: 0.0,
         }
     }
 

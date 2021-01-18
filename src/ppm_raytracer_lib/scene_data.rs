@@ -1,36 +1,25 @@
 use crate::camera;
-use crate::hittable_list;
-use crate::vec3;
 
 /// World data needed by the renderer.
 ///
 /// Not intended to be modified by the caller.
+#[derive(Clone, Copy, Debug)]
 pub struct SceneData {
     pub image_width: u32,
     pub aspect_ratio: f64,
     pub samples_per_pixel: i32,
     pub max_ray_hits: i32,
-    pub world: hittable_list::HittableList,
     pub camera: camera::Camera,
 }
 
 impl SceneData {
-    pub fn new() -> SceneData {
+    pub const fn new() -> SceneData {
         SceneData {
             image_width: 250,
-            aspect_ratio: 16.0 / 9.0,
+            aspect_ratio: 1.7777777777777777, // 16 x 9 aspect ratio hack
             samples_per_pixel: 1,
             max_ray_hits: 50,
-            world: hittable_list::HittableList::new(),
-            camera: camera::Camera::new(
-                vec3::Point3 { e: [0.0, 1.0, -2.0] },
-                vec3::Point3 { e: [0.0, 0.0, 0.0] },
-                vec3::Point3 { e: [0.0, 0.0, 0.0] },
-                20.0,
-                0.0,
-                0.0,
-                0.0,
-            ),
+            camera: camera::Camera::busted_new(),
         }
     }
 }

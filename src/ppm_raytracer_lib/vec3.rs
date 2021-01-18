@@ -1,10 +1,9 @@
 //! Defines the `Vec3` type and its associated functions for use with 3D geometry and color.
 
 use crate::rtweekend;
-use std::clone;
-use std::marker;
 use std::ops;
 
+#[derive(Clone, Copy, Debug)]
 pub struct Vec3 {
     pub e: [f64; 3],
 }
@@ -68,15 +67,6 @@ impl Vec3 {
 pub type Point3 = Vec3;
 /// Represents an RGB color.
 pub type Color = Vec3;
-
-
-impl marker::Copy for Vec3 {}
-
-impl clone::Clone for Vec3 {
-    fn clone(&self) -> Vec3 {
-        *self
-    }
-}
 
 impl ops::Neg for Vec3 {
     type Output = Vec3;
@@ -216,7 +206,7 @@ pub fn random_unit_vector() -> Vec3 {
 }
 
 /// Returns a reflected `Vec3` satisfying the equation v + 2b.
-/// 
+///
 /// `n` is a unit vector at which `v` is directed. b can be restated as the dot product of `v` and
 /// `n`.
 pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
@@ -224,7 +214,7 @@ pub fn reflect(v: &Vec3, n: &Vec3) -> Vec3 {
 }
 
 /// Returns a refracted direction from the original direction represented by `uv`.
-/// 
+///
 /// `uv` stands for unit direction, `n` stands for normal, and etai_over_etat represents the
 /// refractive property of the surface.
 pub fn refract(uv: &Vec3, n: &Vec3, etai_over_etat: f64) -> Vec3 {
