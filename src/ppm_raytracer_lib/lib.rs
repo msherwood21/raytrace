@@ -78,7 +78,7 @@ pub mod command {
             INIT.call_once(|| {
                 SCENE = init();
             });
-            render::render(SCENE);
+            render::render_loop(SCENE);
         }
     }
 }

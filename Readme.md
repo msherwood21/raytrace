@@ -26,6 +26,7 @@ again.
   - ~~Create binary that essentially calls main~~
 - Docs
   - ~~Document the current interface and logic~~
+  - Add basic user guide to the Readme
 - Refactor
   - Record new design for interfacing with the raytracer library
   - Identify changes needed to facilitate design

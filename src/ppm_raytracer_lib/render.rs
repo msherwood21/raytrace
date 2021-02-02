@@ -1,17 +1,12 @@
-use crate::color;
-use crate::hittable;
-use crate::hittable_list;
-use crate::material;
-use crate::ray;
-use crate::rtweekend;
-use crate::scene_data;
-use crate::sphere;
-use crate::vec3;
-use std::io;
-use std::rc::Rc;
+use crate::{color, hittable, hittable_list, material, ray, rtweekend, scene_data, sphere, vec3};
+use std::{io, rc::Rc};
 
-/// Executes one iteration of the raytracer.
-pub fn render(data: scene_data::SceneData) {
+/// Starts or stops rendering operations.
+///
+/// For the moment this function is a blocking call to be run on a single
+/// thread. In the future this module will be its own thread and this function
+/// will be the interface.
+pub fn render_loop(data: scene_data::SceneData) {
     let image_height = (f64::from(data.image_width) / data.aspect_ratio) as i32;
     let world = random_scene(-11, -11);
 
@@ -20,10 +15,10 @@ pub fn render(data: scene_data::SceneData) {
         data.image_width, image_height
     );
 
-    //    Header
+    // Header
     println!("P3\n{} {}\n255", data.image_width, image_height);
 
-    //    Body
+    // Body
     for j in (0..image_height).rev() {
         //- Progress bar
         eprint!("\rScanlines remaining: {:#04}", j);
@@ -33,20 +28,31 @@ pub fn render(data: scene_data::SceneData) {
                 eprint!(".");
             }
 
-            let mut pixel_color = vec3::Color { e: [0.0, 0.0, 0.0] };
-            for _s in 0..data.samples_per_pixel {
-                let u =
-                    (f64::from(i) + rtweekend::random_double()) / f64::from(data.image_width - 1);
-                let v =
-                    (f64::from(j) + rtweekend::random_double()) / f64::from(image_height - 1);
-                let r = data.camera.get_ray(u, v);
-                pixel_color += ray_color(&r, &world, data.max_ray_hits);
-            }
-            color::write_color(&mut io::stdout(), pixel_color, data.samples_per_pixel);
+            render(&data, &world, image_height, j, i);
         }
     }
 
     eprintln!("\nDone.");
+}
+
+/// Executes one iteration of the raytracer.
+fn render(
+    data: &scene_data::SceneData,
+    world: &hittable_list::HittableList,
+    image_height: i32,
+    scanline: i32,
+    column: u32,
+) {
+    let mut pixel_color = vec3::Color { e: [0.0, 0.0, 0.0] };
+
+    for _ in 0..data.samples_per_pixel {
+        let u = (f64::from(column) + rtweekend::random_double()) / f64::from(data.image_width - 1);
+        let v = (f64::from(scanline) + rtweekend::random_double()) / f64::from(image_height - 1);
+        let r = data.camera.get_ray(u, v);
+        pixel_color += ray_color(&r, world, data.max_ray_hits);
+    }
+
+    color::write_color(&mut io::stdout(), pixel_color, data.samples_per_pixel);
 }
 
 /// Returns a `vec3::Color` specifying the color of ray `r`.

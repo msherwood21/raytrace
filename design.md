@@ -26,6 +26,7 @@ render and providing real time render updates.
 - `render` module
   - Rename `lib::run` to `init` to setup scene data
   - Move the rendering loop and supported operations to `render` functions
+  - Break up render operations to be interruptable
 - `command` module
   - Contains `config` struct related to user modifiable values
   - Performs actions related to user commands
@@ -37,3 +38,5 @@ render and providing real time render updates.
   - Render thread to create the image
   - `command` module is entry point for control thread.
   - `render` module is entry point for render thread. Private interface.
+  - Use Rust channels to communicate. Channel to start / stop rendering.
+    Channel to output image data.
